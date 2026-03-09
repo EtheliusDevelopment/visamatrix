@@ -14,15 +14,14 @@ export async function GET() {
         .select('*', { count: 'exact', head: true });
 
     if (error || count === null) {
-        return new NextResponse('Error generating sitemap index', { status: 500 });
+        return new NextResponse('Error generating sitemap', { status: 500 });
     }
 
     const numSitemaps = Math.ceil(count / BATCH_SIZE);
 
-    // Build the sitemap index XML
     const sitemapEntries = Array.from({ length: numSitemaps }, (_, i) => `
   <sitemap>
-    <loc>${BASE_URL}/sitemap/${i}.xml</loc>
+    <loc>${BASE_URL}/sitemap/${i}</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>`).join('');
 
