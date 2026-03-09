@@ -21,7 +21,7 @@ const openai = new OpenAI({ apiKey: openAiKey });
 // The maximum number of API calls to make in this run (Checkpoint Limit)
 const BATCH_LIMIT = 9000;
 // How many API calls to process simultaneously to speed up the engine
-const CONCURRENCY = 5;
+const CONCURRENCY = 2;
 
 async function generateSeoContent() {
     console.log(`🤖 VisaMatrix AI Engine Starting... (Limit: ${BATCH_LIMIT} routes)`);
