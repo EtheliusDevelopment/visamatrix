@@ -55,7 +55,7 @@ export default async function sitemap(props: { id?: number | string }): Promise<
     }
 
     // Default to localhost if environment variable isn't set
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001';
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://visamatrix.vercel.app';
 
     return routes.map((route: any) => ({
         url: `${baseUrl}/visa/${route.passports.slug}/${route.countries.slug}`,
