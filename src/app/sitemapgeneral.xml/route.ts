@@ -21,7 +21,7 @@ export async function GET() {
 
     const sitemapEntries = Array.from({ length: numSitemaps }, (_, i) => `
   <sitemap>
-    <loc>${BASE_URL}/sitemap/${i}</loc>
+    <loc>${BASE_URL}/sitemap/${i}.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>`).join('');
 
