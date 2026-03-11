@@ -7,6 +7,8 @@ const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://visamatrix.vercel.
 export const revalidate = 86400;
 
 export async function GET() {
+    const baseUrl = BASE_URL;
+    
     const supabase = getSupabaseServerClient();
 
     const { count, error } = await supabase
@@ -14,6 +16,7 @@ export async function GET() {
         .select('*', { count: 'exact', head: true });
 
     if (error || count === null) {
+        console.error('Sitemap Error:', error);
         return new NextResponse('Error generating sitemap', { status: 500 });
     }
 
@@ -21,15 +24,22 @@ export async function GET() {
 
     const sitemapEntries = Array.from({ length: numSitemaps }, (_, i) => `
   <sitemap>
-    <loc>${BASE_URL}/sitemap/${i}.xml</loc>
+    <loc>${baseUrl}/sitemap/${i}.xml</loc>
     <lastmod>${new Date().toISOString()}</lastmod>
   </sitemap>`).join('');
 
+    const staticEntry = `
+  <sitemap>
+    <loc>${baseUrl}/sitemap/static.xml</loc>
+    <lastmod>${new Date().toISOString()}</lastmod>
+  </sitemap>`;
+
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${sitemapEntries}
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${staticEntry}${sitemapEntries}
 </sitemapindex>`;
 
     return new NextResponse(xml, {
+        status: 200,
         headers: {
             'Content-Type': 'application/xml',
             'Cache-Control': 'public, max-age=86400, stale-while-revalidate',

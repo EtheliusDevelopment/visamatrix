@@ -11,7 +11,40 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id } = await params;
-    const chunkId = Number(id) || 0;
+    
+    const cleanId = id.replace('.xml', '');
+
+    const baseUrl = BASE_URL;
+
+    // Gestione rotte statiche
+    if (cleanId === 'static') {
+        const staticUrls = [
+            { loc: `${baseUrl}/`, lastmod: new Date().toISOString(), priority: '1.0' },
+            { loc: `${baseUrl}/visa-search`, lastmod: new Date().toISOString(), priority: '0.9' },
+        ];
+
+        const urlEntries = staticUrls.map(url => `
+  <url>
+    <loc>${url.loc}</loc>
+    <lastmod>${url.lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>${url.priority}</priority>
+  </url>`).join('');
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urlEntries}
+</urlset>`;
+
+        return new NextResponse(xml, {
+            status: 200,
+            headers: {
+                'Content-Type': 'application/xml',
+                'Cache-Control': 'public, max-age=86400, stale-while-revalidate',
+            },
+        });
+    }
+
+    const chunkId = Number(cleanId) || 0;
     const start = chunkId * BATCH_SIZE;
     const end = start + BATCH_SIZE - 1;
 
@@ -29,7 +62,7 @@ export async function GET(
 
     const urlEntries = routes.map((route: any) => `
   <url>
-    <loc>${BASE_URL}/visa/${route.passports.slug}/${route.countries.slug}</loc>
+    <loc>${baseUrl}/visa/${route.passports.slug}/${route.countries.slug}</loc>
     <lastmod>${new Date(route.updated_at).toISOString()}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -40,6 +73,7 @@ export async function GET(
 </urlset>`;
 
     return new NextResponse(xml, {
+        status: 200,
         headers: {
             'Content-Type': 'application/xml',
             'Cache-Control': 'public, max-age=86400, stale-while-revalidate',
