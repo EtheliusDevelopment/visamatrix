@@ -5,6 +5,8 @@ const BATCH_SIZE = 5000;
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://visamatrix.vercel.app';
 
 export const revalidate = 86400;
+export const dynamic = 'force-static';
+export const runtime = 'edge';
 
 export async function GET() {
     const baseUrl = BASE_URL;
@@ -42,7 +44,7 @@ export async function GET() {
         status: 200,
         headers: {
             'Content-Type': 'application/xml',
-            'Cache-Control': 'public, max-age=86400, stale-while-revalidate',
+            'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate',
         },
     });
 }
